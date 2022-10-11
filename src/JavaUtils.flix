@@ -14,7 +14,10 @@ namespace JavaUtils {
         };
         Iterator(done, next)
 
+    pub def objToString(o: a): String =
+        import java.lang.Object.toString(): String \ {};
+        toString(o as ##java.lang.Object)
+
     pub def printObject(o: a): Unit \ IO =
-        import java.lang.Object.toString(): String \ IO;
-        println(toString(o as ##java.lang.Object))
+        println(objToString(o))
 }
