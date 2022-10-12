@@ -5,4 +5,5 @@ def main(): Unit \ IO =
     println(readConfigFile("FlixProject.toml") |>
         getSubConfig("dependencies") |>
         getEntries);
-    println(findAvailableVersions("org.apache.maven.resolver:maven-resolver-util:[0,)"))
+    findAvailableVersions("org.apache.maven.resolver:maven-resolver-util:[0,)")
+    
