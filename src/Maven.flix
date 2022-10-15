@@ -1,6 +1,7 @@
 namespace Maven {
     import org.apache.maven.repository.internal.MavenRepositorySystemUtils;
-    import org.eclipse.aether.{RepositorySystem, DefaultRepositorySystemSession, RepositorySystemSession};
+    import org.eclipse.aether.{RepositorySystem, DefaultRepositorySystemSession, RepositorySystemSession,
+                               AbstractRepositoryListener, RepositoryListener, RepositoryEvent};
     import org.eclipse.aether.artifact.{Artifact, DefaultArtifact};
     import org.eclipse.aether.collection.CollectRequest;
     import org.eclipse.aether.graph.{Dependency, DependencyFilter};
@@ -83,10 +84,16 @@ namespace Maven {
         import new org.eclipse.aether.repository.LocalRepository(String): LocalRepository as newLocalRepository;
         import org.eclipse.aether.RepositorySystem.newLocalRepositoryManager(RepositorySystemSession, LocalRepository): LocalRepositoryManager;
         import org.eclipse.aether.DefaultRepositorySystemSession.setLocalRepositoryManager(LocalRepositoryManager): DefaultRepositorySystemSession;
+        import org.eclipse.aether.DefaultRepositorySystemSession.setRepositoryListener(RepositoryListener): DefaultRepositorySystemSession;
+        import org.eclipse.aether.RepositoryEvent.getArtifact(): Artifact \ IO;
 
         let session = newSession();
         let localRepo = newLocalRepository("build/local-repo");
         discard setLocalRepositoryManager(session, newLocalRepositoryManager(system, session as RepositorySystemSession, localRepo));
+        discard setRepositoryListener(session, new AbstractRepositoryListener {
+            def artifactDownloaded(_this: AbstractRepositoryListener, e: RepositoryEvent): Unit =
+                println("Downloaded: ${JavaUtils.objToString(getArtifact(e))}")
+        } as RepositoryListener);
         session as RepositorySystemSession
 
     def newRepositoryList(): JList \ IO =
