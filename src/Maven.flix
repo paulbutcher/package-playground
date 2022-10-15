@@ -7,8 +7,9 @@ namespace Maven {
     import org.eclipse.aether.graph.{Dependency, DependencyFilter};
     import org.eclipse.aether.impl.{DefaultServiceLocator, DefaultServiceLocator$ErrorHandler => ErrorHandler};
     import org.eclipse.aether.repository.{LocalRepository, LocalRepositoryManager, RemoteRepository, RemoteRepository$Builder => RepoBuilder};
-    import org.eclipse.aether.resolution.{VersionRangeRequest, VersionRangeResult, DependencyRequest, DependencyResult};
+    import org.eclipse.aether.resolution.{VersionRangeRequest, VersionRangeResult, DependencyRequest, DependencyResult, ArtifactResult};
     import org.eclipse.aether.version.Version;
+    import java.io.File;
     import java.lang.{Class, Object, Throwable};
     import java.util.{Collections, List => JList};
 
@@ -36,21 +37,25 @@ namespace Maven {
             JavaUtils.fromJavaList |> 
             List.map(v -> toString(v))
 
-    pub def resolveTransitiveDependencies(session: Session, coords: List[String]): Unit \ IO =
+    pub def resolveTransitiveDependencies(session: Session, coords: List[String]): List[String] \ IO =
         import static org.eclipse.aether.util.filter.DependencyFilterUtils.classpathFilter(Array[String, false]): DependencyFilter \ IO;
         import new org.eclipse.aether.collection.CollectRequest(JList, JList, JList): CollectRequest \ IO as newCollectRequest;
         import new org.eclipse.aether.graph.Dependency(Artifact, String): Dependency \ IO as newDependency;
         import new org.eclipse.aether.resolution.DependencyRequest(CollectRequest, DependencyFilter): DependencyRequest \ IO as newDependencyRequest;
         import org.eclipse.aether.RepositorySystem.resolveDependencies(RepositorySystemSession, DependencyRequest): DependencyResult \ IO;
         import org.eclipse.aether.resolution.DependencyResult.getArtifactResults(): JList \ IO;
+        import org.eclipse.aether.resolution.ArtifactResult.getArtifact(): Artifact \ IO;
+        import org.eclipse.aether.artifact.Artifact.getFile(): File \ IO;
+        import java.io.File.getPath(): String \ IO;
 
         let dependencies = coords |> List.map(coord -> newDependency(mkArtifact(coord), "compile"));
         let filter = classpathFilter(["compile"]);
         let collectRequest = newCollectRequest(JavaUtils.toJavaList(dependencies), null as JList, newRepositoryList());
         let request = newDependencyRequest(collectRequest, filter);
-        let results = resolveDependencies(session.system, session.session, request) |>
-            getArtifactResults;
-        JavaUtils.printObject(results)
+        resolveDependencies(session.system, session.session, request) |>
+            getArtifactResults |>
+            JavaUtils.fromJavaList |>
+            List.map(r -> getArtifact(r) |> getFile |> getPath)
 
     def newRepositorySystem(): RepositorySystem \ IO =
         import static org.apache.maven.repository.internal.MavenRepositorySystemUtils.newServiceLocator(): DefaultServiceLocator;
