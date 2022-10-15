@@ -36,7 +36,7 @@ namespace Maven {
             JavaUtils.fromJavaList |> 
             List.map(v -> toString(v))
 
-    pub def resolveTransitiveDependencies(coords: List[String], session: Session): Unit \ IO =
+    pub def resolveTransitiveDependencies(session: Session, coords: List[String]): Unit \ IO =
         import static org.eclipse.aether.util.filter.DependencyFilterUtils.classpathFilter(Array[String, false]): DependencyFilter \ IO;
         import new org.eclipse.aether.collection.CollectRequest(JList, JList, JList): CollectRequest \ IO as newCollectRequest;
         import new org.eclipse.aether.graph.Dependency(Artifact, String): Dependency \ IO as newDependency;
