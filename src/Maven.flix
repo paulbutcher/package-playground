@@ -17,13 +17,13 @@ namespace Maven {
         import static java.lang.Class.forName(String): Class as getClass;
 
         let locator = newServiceLocator();
-        let _ = addService(locator,
+        discard addService(locator,
             getClass("org.eclipse.aether.spi.connector.RepositoryConnectorFactory"),
             getClass("org.eclipse.aether.connector.basic.BasicRepositoryConnectorFactory"));
-        let _ = addService(locator,
+        discard addService(locator,
             getClass("org.eclipse.aether.spi.connector.transport.TransporterFactory"),
             getClass("org.eclipse.aether.transport.file.FileTransporterFactory"));
-        let _ = addService(locator,
+        discard addService(locator,
             getClass("org.eclipse.aether.spi.connector.transport.TransporterFactory"),
             getClass("org.eclipse.aether.transport.http.HttpTransporterFactory"));
         setErrorHandler(locator, new ErrorHandler {
@@ -40,7 +40,7 @@ namespace Maven {
 
         let session = newSession();
         let localRepo = newLocalRepository("build/local-repo");
-        let _ = setLocalRepositoryManager(session, newLocalRepositoryManager(system, session as RepositorySystemSession, localRepo));
+        discard setLocalRepositoryManager(session, newLocalRepositoryManager(system, session as RepositorySystemSession, localRepo));
         session as RepositorySystemSession
 
     def newRepositoryList(): JList \ IO =
@@ -65,8 +65,8 @@ namespace Maven {
 
         let artifact = newArtifact(coord) as Artifact;
         let request = newVersionRangeRequest();
-        let _ = setArtifact(request, artifact);
-        let _ = setRepositories(request, newRepositoryList());
+        discard setArtifact(request, artifact);
+        discard setRepositories(request, newRepositoryList());
         let rangeResult = resolveVersionRange(system, session, request);
         let versions = getVersions(rangeResult);
         JavaUtils.printObject(versions)
