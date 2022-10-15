@@ -36,21 +36,17 @@ namespace Maven {
             JavaUtils.fromJavaList |> 
             List.map(v -> toString(v))
 
-    pub def resolveTransitiveDependencies(coord: String, session: Session): Unit \ IO =
+    pub def resolveTransitiveDependencies(coords: List[String], session: Session): Unit \ IO =
         import static org.eclipse.aether.util.filter.DependencyFilterUtils.classpathFilter(Array[String, false]): DependencyFilter \ IO;
-        import new org.eclipse.aether.collection.CollectRequest(): CollectRequest \ IO as newCollectRequest;
-        import org.eclipse.aether.collection.CollectRequest.setRoot(Dependency): CollectRequest \ IO;
+        import new org.eclipse.aether.collection.CollectRequest(JList, JList, JList): CollectRequest \ IO as newCollectRequest;
         import new org.eclipse.aether.graph.Dependency(Artifact, String): Dependency \ IO as newDependency;
-        import org.eclipse.aether.collection.CollectRequest.setRepositories(JList): CollectRequest \ IO;
         import new org.eclipse.aether.resolution.DependencyRequest(CollectRequest, DependencyFilter): DependencyRequest \ IO as newDependencyRequest;
         import org.eclipse.aether.RepositorySystem.resolveDependencies(RepositorySystemSession, DependencyRequest): DependencyResult \ IO;
         import org.eclipse.aether.resolution.DependencyResult.getArtifactResults(): JList \ IO;
 
-        let artifact = mkArtifact(coord);
+        let dependencies = coords |> List.map(coord -> newDependency(mkArtifact(coord), "compile"));
         let filter = classpathFilter(["compile"]);
-        let collectRequest = newCollectRequest();
-        discard setRoot(collectRequest, newDependency(artifact, "compile"));
-        discard setRepositories(collectRequest, newRepositoryList());
+        let collectRequest = newCollectRequest(JavaUtils.toJavaList(dependencies), null as JList, newRepositoryList());
         let request = newDependencyRequest(collectRequest, filter);
         let results = resolveDependencies(session.system, session.session, request) |>
             getArtifactResults;

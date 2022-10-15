@@ -7,7 +7,4 @@ def main(): Unit \ IO =
         getSubConfig("dependencies") |>
         getEntries);
 
-    let versions = Maven.findAvailableVersions("org.apache.maven.resolver:maven-resolver-util:[0,)", mavenSession);
-    println(versions);
-
-    Maven.resolveTransitiveDependencies("org.apache.maven.resolver:maven-resolver-impl:1.3.3", mavenSession)
+    Maven.resolveTransitiveDependencies("org.apache.maven.resolver:maven-resolver-impl:1.3.3" :: Nil, mavenSession)
