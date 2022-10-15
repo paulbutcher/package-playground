@@ -1,9 +1,11 @@
 use Toml.{readConfigFile, getSubConfig, getEntries}
-use Maven.findAvailableVersions
 
 def main(): Unit \ IO =
+    let mavenSession = Maven.init();
+
     println(readConfigFile("FlixProject.toml") |>
         getSubConfig("dependencies") |>
         getEntries);
-    findAvailableVersions("org.apache.maven.resolver:maven-resolver-util:[0,)")
-    
+
+    let versions = Maven.findAvailableVersions("org.apache.maven.resolver:maven-resolver-util:[0,)", mavenSession);
+    println(versions)

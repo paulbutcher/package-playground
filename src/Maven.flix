@@ -9,6 +9,31 @@ namespace Maven {
     import java.lang.{Class, Object, Throwable};
     import java.util.{Collections, List => JList};
 
+    type alias Session = {system = RepositorySystem, session = RepositorySystemSession}
+
+    pub def init(): Session \ IO =
+        let system = newRepositorySystem();
+        let session = newRepositorySystemSession(system);
+        {system = system, session = session}
+
+    pub def findAvailableVersions(coord: String, session: Session): List[String] \ IO =
+        import new org.eclipse.aether.artifact.DefaultArtifact(String): DefaultArtifact as newArtifact;
+        import new org.eclipse.aether.resolution.VersionRangeRequest(): VersionRangeRequest as newVersionRangeRequest;
+        import org.eclipse.aether.resolution.VersionRangeRequest.setArtifact(Artifact): VersionRangeRequest;
+        import org.eclipse.aether.resolution.VersionRangeRequest.setRepositories(JList): VersionRangeRequest;
+        import org.eclipse.aether.RepositorySystem.resolveVersionRange(RepositorySystemSession, VersionRangeRequest): VersionRangeResult;
+        import org.eclipse.aether.resolution.VersionRangeResult.getVersions(): JList;
+        import org.eclipse.aether.version.Version.toString(): String \ {};
+
+        let artifact = newArtifact(coord) as Artifact;
+        let request = newVersionRangeRequest();
+        discard setArtifact(request, artifact);
+        discard setRepositories(request, newRepositoryList());
+        resolveVersionRange(session.system, session.session, request) |>
+            getVersions |> 
+            JavaUtils.fromJavaList |> 
+            List.map(v -> toString(v))
+
     def newRepositorySystem(): RepositorySystem \ IO =
         import static org.apache.maven.repository.internal.MavenRepositorySystemUtils.newServiceLocator(): DefaultServiceLocator;
         import org.eclipse.aether.impl.DefaultServiceLocator.getService(Class): Object;
@@ -51,23 +76,4 @@ namespace Maven {
         let builder = newRepoBuilder("central", "default", "https://repo.maven.apache.org/maven2/");
         let defaultRepo = build(builder);
         singletonList(defaultRepo as Object)
-
-    pub def findAvailableVersions(coord: String): Unit \ IO =
-        import new org.eclipse.aether.artifact.DefaultArtifact(String): DefaultArtifact as newArtifact;
-        import new org.eclipse.aether.resolution.VersionRangeRequest(): VersionRangeRequest as newVersionRangeRequest;
-        import org.eclipse.aether.resolution.VersionRangeRequest.setArtifact(Artifact): VersionRangeRequest;
-        import org.eclipse.aether.resolution.VersionRangeRequest.setRepositories(JList): VersionRangeRequest;
-        import org.eclipse.aether.RepositorySystem.resolveVersionRange(RepositorySystemSession, VersionRangeRequest): VersionRangeResult;
-        import org.eclipse.aether.resolution.VersionRangeResult.getVersions(): JList;
-
-        let system = newRepositorySystem();
-        let session = newRepositorySystemSession(system);
-
-        let artifact = newArtifact(coord) as Artifact;
-        let request = newVersionRangeRequest();
-        discard setArtifact(request, artifact);
-        discard setRepositories(request, newRepositoryList());
-        let rangeResult = resolveVersionRange(system, session, request);
-        let versions = getVersions(rangeResult);
-        JavaUtils.printObject(versions)
 }

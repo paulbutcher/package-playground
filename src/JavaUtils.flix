@@ -14,6 +14,10 @@ namespace JavaUtils {
         };
         Iterator(done, next)
 
+    pub def fromJavaList(l: ##java.util.List): List[a] \ IO =
+        import java.util.List.iterator(): ##java.util.Iterator \ IO;
+        iterator(l) |> fromJavaIter |> Iterator.toList
+
     pub def objToString(o: a): String =
         import java.lang.Object.toString(): String \ {};
         toString(o as ##java.lang.Object)
