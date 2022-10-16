@@ -7,10 +7,7 @@ namespace Version {
     instance PartialOrder[SemVer] {
         pub def lessEqual(x: SemVer, y: SemVer): Bool = match (x, y) {
             case (Components(maj1, min1, p1), Components(maj2, min2, p2)) =>
-                if (maj1 < maj2) true
-                else if (min1 < min2) true 
-                else if (p1 <= p2) true
-                else false
+                (maj1 == maj2) and ((min1 < min2) or (min1 == min2) and (p1 <= p2))
         }
     }
 
