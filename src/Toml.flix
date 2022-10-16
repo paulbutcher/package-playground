@@ -13,8 +13,8 @@ namespace Toml {
         load(config);
         config as Config
 
-    pub def getSubConfig(path: String, config: Config): Config \ IO =
-        import com.electronwill.nightconfig.core.Config.get(String): Object \ IO;
+    pub def getSubConfig(path: String, config: Config): Config =
+        import com.electronwill.nightconfig.core.Config.get(String): Object \ {};
         get(config, path) as Config
 
     def entryToPair(entry: Entry): (String, String) =
@@ -22,11 +22,12 @@ namespace Toml {
         import com.electronwill.nightconfig.core.Config$Entry.getValue(): Object \ {};
         (getKey(entry), getValue(entry) as String)
 
-    pub def getEntries(config: Config): Map[String, String] \ IO =
+    pub def getEntries(config: Config): Map[String, String] = region r {
         import com.electronwill.nightconfig.core.Config.entrySet(): ##java.util.Set \ {};
-        import java.util.Set.iterator(): ##java.util.Iterator \ IO;
+        import java.util.Set.iterator(): ##java.util.Iterator \ {Read(r), Write(r)};
         iterator(entrySet(config)) |>
-            fromJavaIter |>
+            fromJavaIter(r) |>
             Iterator.mapL(entryToPair) |>
             Iterator.toMap
+    }
 }

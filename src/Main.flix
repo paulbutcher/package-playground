@@ -1,6 +1,7 @@
 def main(): Unit \ IO =
     let mavenSession = Maven.init();
+    let config = Config.init();
 
-    let classpath = Dependencies.getMavenDependencies() |>
+    let classpath = Config.getMavenDependencies(config) |>
         Maven.resolveTransitiveDependencies(mavenSession);
     println(classpath)
