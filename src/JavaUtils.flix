@@ -23,7 +23,19 @@ namespace JavaUtils {
         import new java.util.ArrayList(): ##java.util.List \ Write(r) as newList;
         import java.util.List.add(##java.lang.Object): Bool \ Write(r);
         let _ = r; // Defeat unused variable error
+        // Would be nicer to use foreach here, but can't because foreach doesn't (yet) work
+        // with immutable datastructures: https://github.com/flix/flix/issues/4485
         List.foldLeft((jl, e) -> {discard add(jl, e as ##java.lang.Object); jl}, newList(), l)
+    }
+
+    pub def fromJavaMap(m: ##java.util.Map): Map[a, b] with Order[a] = region r {
+        import java.util.Map.entrySet(): ##java.util.Set \ {};
+        import java.util.Set.iterator(): ##java.util.Iterator \ {Read(r), Write(r)};
+        import java.util.Map$Entry.getKey(): ##java.lang.Object \ {};
+        import java.util.Map$Entry.getValue(): ##java.lang.Object \ {};
+        entrySet(m) |> iterator |> fromJavaIter(r) |>
+            Iterator.mapL(e: ##java.util.Map$Entry -> (getKey(e) as a, getValue(e) as b)) |>
+            Iterator.toMap
     }
 
     pub def objToString(o: a): String =
