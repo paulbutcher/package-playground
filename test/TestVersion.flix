@@ -2,7 +2,7 @@ namespace Version {
 
     @test
     def testParse01(): Bool =
-        Assert.eq(parse("1.2.3"), Some(Components(1, 2, 3)))
+        Assert.eq(parse("1.2.3"), Some(SemVer(1, 2, 3)))
 
     @test
     def testParse02(): Bool = 
@@ -22,29 +22,29 @@ namespace Version {
 
     @test
     def testPartialOrder01(): Bool =
-        PartialOrder.lessEqual(Components(1, 2, 3), Components(1, 2, 3))
+        PartialOrder.lessEqual(SemVer(1, 2, 3), SemVer(1, 2, 3))
 
     @test
     def testPartialOrder02(): Bool =
-        PartialOrder.lessEqual(Components(1, 2, 3), Components(1, 3, 0))
+        PartialOrder.lessEqual(SemVer(1, 2, 3), SemVer(1, 3, 0))
 
     @test
     def testPartialOrder03(): Bool =
-        PartialOrder.lessEqual(Components(1, 2, 3), Components(1, 2, 4))
+        PartialOrder.lessEqual(SemVer(1, 2, 3), SemVer(1, 2, 4))
 
     @test
     def testPartialOrder04(): Bool =
-        not PartialOrder.lessEqual(Components(1, 2, 3), Components(1, 1, 3))
+        not PartialOrder.lessEqual(SemVer(1, 2, 3), SemVer(1, 1, 3))
 
     @test
     def testPartialOrder05(): Bool =
-        not PartialOrder.lessEqual(Components(1, 2, 3), Components(1, 2, 2))
+        not PartialOrder.lessEqual(SemVer(1, 2, 3), SemVer(1, 2, 2))
 
     @test
     def testPartialOrder06(): Bool =
-        not PartialOrder.lessEqual(Components(0, 2, 3), Components(1, 2, 3))
+        not PartialOrder.lessEqual(SemVer(0, 2, 3), SemVer(1, 2, 3))
 
     @test
     def testPartialOrder07(): Bool =
-        not PartialOrder.lessEqual(Components(1, 2, 3), Components(0, 2, 3))
+        not PartialOrder.lessEqual(SemVer(1, 2, 3), SemVer(0, 2, 3))
 }
