@@ -17,12 +17,16 @@ namespace Toml {
         import com.electronwill.nightconfig.core.Config.get(String): Object \ {};
         get(config, path) as Config
 
-    def entryToPair(entry: Entry): (String, String) =
+    def entryToPair(entry: Entry): (String, Config) =
         import com.electronwill.nightconfig.core.Config$Entry.getKey(): String \ {};
         import com.electronwill.nightconfig.core.Config$Entry.getValue(): Object \ {};
-        (getKey(entry), getValue(entry) as String)
+        (getKey(entry), getValue(entry) as Config)
 
-    pub def getEntries(config: Config): Map[String, String] = region r {
+    pub def configToMap(config: Config): Map[String, String] =
+        import com.electronwill.nightconfig.core.Config.valueMap(): ##java.util.Map \ {};
+        valueMap(config) |> JavaUtils.fromJavaMap
+
+    pub def getEntries(config: Config): Map[String, Config] = region r {
         import com.electronwill.nightconfig.core.Config.entrySet(): ##java.util.Set \ {};
         import java.util.Set.iterator(): ##java.util.Iterator \ {Read(r), Write(r)};
         iterator(entrySet(config)) |>
