@@ -1,3 +1,6 @@
+[project]
+flix = "0.32.0"
+
 [dependencies]
 "org.apache.maven.resolver:maven-resolver-api".mvn = "1.8.2"
 "org.apache.maven.resolver:maven-resolver-spi".mvn = "1.8.2"

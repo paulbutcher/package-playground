@@ -34,4 +34,8 @@ namespace Toml {
             Iterator.mapL(entryToPair) |>
             Iterator.toMap
     }
+
+    pub def getString(path: String, config: Config): String =
+        import com.electronwill.nightconfig.core.Config.get(String): Object \ {};
+        get(config, path) as String
 }

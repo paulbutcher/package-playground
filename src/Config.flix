@@ -1,6 +1,6 @@
 namespace Config {
 
-    use Toml.{readConfigFile, getSubConfig, getEntries, configToMap}
+    use Toml.{readConfigFile, getSubConfig, getEntries, configToMap, getString}
 
     type alias Config = {config = ##com.electronwill.nightconfig.core.Config}
 
@@ -22,4 +22,7 @@ namespace Config {
             Map.filterMap(v -> Map.get("mvn", v)) |> 
             Map.toList |>
             List.map(toMavenCoord)
+
+    pub def getFlixVersion(config: Config): String =
+        config.config |> getString("project.flix")
 }
