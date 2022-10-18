@@ -14,7 +14,6 @@ namespace Compiler {
         let loader = newClassLoader([newURL("file://${flixJar}")], null as ClassLoader);
         let clazz = loadClass(loader, "ca.uwaterloo.flix.Main");
         let main = getMethod(clazz, "mainX", [getClass("[Ljava.lang.Object;")]);
-        let args = sourceFiles ++ classpath;
-        println("Invoking main with: ${args}");
+        let args = flixJar :: sourceFiles ++ classpath;
         discard invoke(main, null as Object, [List.toArray(Static, args) as Object])
 }
