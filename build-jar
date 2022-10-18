@@ -1,0 +1,15 @@
+rm -fr tmp
+rm -fr build
+rm flixp.jar
+rm package-playground.jar
+
+java -jar flix.jar build
+java -jar flix.jar build-jar
+
+mkdir tmp
+cd tmp
+for file in ../lib/*.jar; do jar -xf $file; done
+jar -xf ../package-playground.jar
+
+cd ..
+jar --create --file flixp.jar --manifest MANIFEST.MF -C tmp .
