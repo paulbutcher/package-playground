@@ -1,5 +1,6 @@
 [project]
 flix = "0.32.0"
+paths = ["src"]
 
 [dependencies]
 "org.apache.maven.resolver:maven-resolver-api".mvn = "1.8.2"

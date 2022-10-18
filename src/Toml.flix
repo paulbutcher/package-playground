@@ -38,4 +38,10 @@ namespace Toml {
     pub def getString(path: String, config: Config): String =
         import com.electronwill.nightconfig.core.Config.get(String): Object \ {};
         get(config, path) as String
+
+    pub def getStringList(path: String, config: Config): List[String] =
+        import com.electronwill.nightconfig.core.Config.get(String): Object \ {};
+        get(config, path) as ##java.util.List |>
+            JavaUtils.fromJavaList
+    
 }

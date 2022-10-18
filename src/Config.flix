@@ -2,7 +2,7 @@ namespace Config {
 
     use Toml.{readConfigFile, getSubConfig, getEntries, configToMap, getString}
 
-    type alias Config = {config = ##com.electronwill.nightconfig.core.Config}
+    pub type alias Config = {config = ##com.electronwill.nightconfig.core.Config}
 
     def toMavenCoord(kv: (String, String)): String =
         let (k, v) = kv;
@@ -25,4 +25,8 @@ namespace Config {
 
     pub def getFlixVersion(config: Config): String =
         config.config |> getString("project.flix")
+
+    pub def getSourcePaths(config: Config): List[String] = 
+        config.config |> Toml.getStringList("project.paths")
 }
+    
