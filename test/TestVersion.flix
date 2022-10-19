@@ -71,4 +71,16 @@ namespace Version {
     @test 
     def testMeetLattice03(): Bool =
         Assert.eq(MeetLattice.greatestLowerBound(SemVer(2, 1, 0), SemVer(1, 1, 0)), Bot)
+
+    @test
+    def testPatchCompatible01(): Bool =
+        Version.isPatchCompatible(SemVer(1, 2, 3), SemVer(1, 2, 3))
+
+    @test
+    def testPatchCompatible02(): Bool =
+        Version.isPatchCompatible(SemVer(1, 2, 3), SemVer(1, 2, 4))
+
+    @test
+    def testPatchCompatible03(): Bool =
+        not Version.isPatchCompatible(SemVer(1, 2, 3), SemVer(1, 3, 3))
 }
