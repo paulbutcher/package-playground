@@ -32,7 +32,13 @@ namespace Version {
             else Bot
     }
 
-    def parse(s: String): Option[SemVer] =
+    pub def isPatchCompatible(x: SemVer, y: SemVer): Bool = match (x, y) {
+        case (SemVer(maj1, min1, _), SemVer(maj2, min2, _)) =>
+            (maj1 == maj2) and (min1 == min2)
+        case _ => false
+    }
+
+    pub def parse(s: String): Option[SemVer] =
         let components = JavaUtils.findMatches("^(\\d+)\\.(\\d+)\\.(\\d+)$$", s) |>
             Option.flatMap(List.map(Int32.fromString) >> Option.sequence);
         match components {
