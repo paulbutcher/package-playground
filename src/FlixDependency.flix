@@ -31,7 +31,7 @@ namespace FlixDependency {
     pub def resolve(): Unit \ IO = 
         let rules = #{
             Root("Frobnicate", SemVer(1, 2, 0)).
-            Root("Munge", SemVer(1, 2, 0)).
+            Root("Munge", SemVer(1, 2, 1)).
             DependsOn("Frobnicate", SemVer(0, 1, 0), "Loggify", SemVer(1, 0, 0)).
             DependsOn("Frobnicate", SemVer(0, 2, 0), "Loggify", SemVer(1, 0, 0)).
             DependsOn("Frobnicate", SemVer(1, 2, 0), "Loggify", SemVer(1, 0, 0)).
@@ -50,8 +50,8 @@ namespace FlixDependency {
         };
         let candidates = solve rules project Dependency;
         let rules2 = #{
-            Latest(n; v) :- fix Dependency(n, v).
+            Latest("dummy", n; v) :- Dependency(n, v).
         };
-        query candidates, rules2 select (x, y) from Latest(x; y) |> println;
+        query candidates, rules2 select (x, y) from Latest(_, x; y) |> println;
         ()
 }

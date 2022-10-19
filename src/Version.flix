@@ -20,15 +20,15 @@ namespace Version {
 
     instance JoinLattice[SemVer] {
         pub def leastUpperBound(x: SemVer, y: SemVer): SemVer =
-            if (x <= y) y
-            else if (y <= x) x
+            if (PartialOrder.lessEqual(x, y)) y
+            else if (PartialOrder.lessEqual(y, x)) x
             else Top
     }
 
     instance MeetLattice[SemVer] {
         pub def greatestLowerBound(x: SemVer, y: SemVer): SemVer =
-            if (x <= y) x
-            else if (y <= x) y
+            if (PartialOrder.lessEqual(x, y)) x
+            else if (PartialOrder.lessEqual(y, x)) y
             else Bot
     }
 

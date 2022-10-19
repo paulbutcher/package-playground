@@ -47,4 +47,28 @@ namespace Version {
     @test
     def testPartialOrder07(): Bool =
         not PartialOrder.lessEqual(SemVer(1, 2, 3), SemVer(0, 2, 3))
+
+    @test
+    def testJoinLattice01(): Bool =
+        Assert.eq(JoinLattice.leastUpperBound(SemVer(1, 1, 0), SemVer(1, 1, 0)), SemVer(1, 1, 0))
+
+    @test
+    def testJoinLattice02(): Bool =
+        Assert.eq(JoinLattice.leastUpperBound(SemVer(1, 1, 0), SemVer(1, 1, 1)), SemVer(1, 1, 1))
+
+    @test
+    def testJoinLattice03(): Bool =
+        Assert.eq(JoinLattice.leastUpperBound(SemVer(2, 1, 0), SemVer(1, 1, 0)), Top)
+
+    @test 
+    def testMeetLattice01(): Bool =
+        Assert.eq(MeetLattice.greatestLowerBound(SemVer(1, 1, 0), SemVer(1, 1, 0)), SemVer(1, 1, 0))
+
+    @test 
+    def testMeetLattice02(): Bool =
+        Assert.eq(MeetLattice.greatestLowerBound(SemVer(1, 1, 0), SemVer(1, 1, 1)), SemVer(1, 1, 0))
+
+    @test 
+    def testMeetLattice03(): Bool =
+        Assert.eq(MeetLattice.greatestLowerBound(SemVer(2, 1, 0), SemVer(1, 1, 0)), Bot)
 }
