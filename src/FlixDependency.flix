@@ -47,11 +47,9 @@ namespace FlixDependency {
 
             Dependency(n, v) :- Root(n, v).
             Dependency(ns, vs) :- DependsOn(n, v, ns, vs), Dependency(n, v).
-        };
-        let candidates = solve rules project Dependency;
-        let rules2 = #{
+
             Latest("dummy", n; v) :- Dependency(n, v).
         };
-        query candidates, rules2 select (x, y) from Latest(_, x; y) |> println;
+        query rules select (x, y) from Latest(_, x; y) |> println;
         ()
 }
