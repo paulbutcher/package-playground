@@ -5,11 +5,11 @@ namespace Compiler {
 
     pub def run(flixJar: String, sourceFiles: List[String], classpath: List[String]): Unit \ IO =
         import new java.net.URL(String): URL \ IO as newURL;
-        import new java.net.URLClassLoader(Array[URL, _], ClassLoader): URLClassLoader \ IO as newClassLoader;
+        import new java.net.URLClassLoader(Array[URL, Static], ClassLoader): URLClassLoader \ IO as newClassLoader;
         import java.net.URLClassLoader.loadClass(String): Class \ IO;
-        import java.lang.Class.getMethod(String, Array[Class, _]): Method \ {};
+        import java.lang.Class.getMethod(String, Array[Class, Static]): Method \ {};
         import static java.lang.Class.forName(String): Class \ {} as getClass;
-        import java.lang.reflect.Method.invoke(Object, Array[Object, _]): Object \ IO;
+        import java.lang.reflect.Method.invoke(Object, Array[Object, Static]): Object \ IO;
  
         let loader = newClassLoader([newURL("file://${flixJar}")], null as ClassLoader);
         let clazz = loadClass(loader, "ca.uwaterloo.flix.Main");
