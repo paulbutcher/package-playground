@@ -1,32 +1,25 @@
 namespace Config {
 
-    use Toml.{readConfigFile, getSubConfig, getEntries, configToMap, getString}
+    use Toml.{readConfigFile, getString}
 
-    pub type alias Config = {config = ##com.electronwill.nightconfig.core.Config}
+    pub type alias Config = ##org.tomlj.TomlParseResult
 
     def toMavenCoord(kv: (String, String)): String =
         let (k, v) = kv;
         "${k}:${v}"
 
     pub def init(): Config \ IO =
-        {config = readConfigFile("FlixProject.toml")}
+        readConfigFile("flix.toml")
 
-    pub def getDependencies(config: Config): Map[String, Map[String, String]] =
-        config.config |>
-            getSubConfig("dependencies") |>
-            getEntries |>
-            Map.map(configToMap)
-
-    pub def getMavenDependencies(deps: Map[String, Map[String, String]]): List[String] =
-        deps |> 
-            Map.filterMap(v -> Map.get("mvn", v)) |> 
-            Map.toList |>
+    pub def getMavenDependencies(config: Config): List[String] =
+        config |> 
+            Toml.getMap("dependencies.mvn") |> 
+            Map.toList |> 
             List.map(toMavenCoord)
 
     pub def getFlixVersion(config: Config): String =
-        config.config |> getString("project.flix")
+        config |> getString("project.flix")
 
     pub def getSourcePaths(config: Config): List[String] = 
-        config.config |> Toml.getStringList("project.paths")
+        config |> Toml.getStringList("project.paths")
 }
-    

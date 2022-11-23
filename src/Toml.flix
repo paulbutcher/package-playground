@@ -1,47 +1,24 @@
 namespace Toml {
-    import com.electronwill.nightconfig.core.file.FileConfig;
-    import com.electronwill.nightconfig.core.Config;
-    import com.electronwill.nightconfig.core.{Config$Entry => Entry}
-    import java.lang.Object;
+    import org.tomlj.{TomlParseResult, TomlArray, TomlTable};
+    import java.nio.file.Path;
 
-    use JavaUtils.fromJavaIter;
+    pub def readConfigFile(filename: String): TomlParseResult \ IO =
+        import static java.nio.file.Paths.get(String, Array[String, Static]): Path \ IO as getPath;
+        import static org.tomlj.Toml.parse(Path): TomlParseResult \ IO;
 
-    pub def readConfigFile(filename: String): Config \ IO =
-        import static com.electronwill.nightconfig.core.file.FileConfig.of(String): FileConfig \ IO as configOf;
-        import com.electronwill.nightconfig.core.file.FileConfig.load(): Unit \ IO;
-        let config = configOf(filename);
-        load(config);
-        config as Config
+        getPath(filename, []) |> parse
 
-    pub def getSubConfig(path: String, config: Config): Config =
-        import com.electronwill.nightconfig.core.Config.get(String): Object \ {};
-        get(config, path) as Config
+    pub def getString(path: String, config: TomlParseResult): String =
+        import org.tomlj.TomlParseResult.getString(String): String \ {} as getTomlString;
+        getTomlString(config, path)
 
-    def entryToPair(entry: Entry): (String, Config) =
-        import com.electronwill.nightconfig.core.Config$Entry.getKey(): String \ {};
-        import com.electronwill.nightconfig.core.Config$Entry.getValue(): Object \ {};
-        (getKey(entry), getValue(entry) as Config)
+    pub def getStringList(path: String, config: TomlParseResult): List[String] =
+        import org.tomlj.TomlParseResult.getArray(String): TomlArray \ {};
+        import org.tomlj.TomlArray.toList(): ##java.util.List \ {};
+        getArray(config, path) |> toList |> JavaUtils.fromJavaList
 
-    pub def configToMap(config: Config): Map[String, String] =
-        import com.electronwill.nightconfig.core.Config.valueMap(): ##java.util.Map \ {};
-        valueMap(config) |> JavaUtils.fromJavaMap
-
-    pub def getEntries(config: Config): Map[String, Config] = region r {
-        import com.electronwill.nightconfig.core.Config.entrySet(): ##java.util.Set \ {};
-        import java.util.Set.iterator(): ##java.util.Iterator \ {Read(r), Write(r)};
-        iterator(entrySet(config)) |>
-            fromJavaIter(r) |>
-            Iterator.mapL(entryToPair) |>
-            Iterator.toMap
-    }
-
-    pub def getString(path: String, config: Config): String =
-        import com.electronwill.nightconfig.core.Config.get(String): Object \ {};
-        get(config, path) as String
-
-    pub def getStringList(path: String, config: Config): List[String] =
-        import com.electronwill.nightconfig.core.Config.get(String): Object \ {};
-        get(config, path) as ##java.util.List |>
-            JavaUtils.fromJavaList
-    
+    pub def getMap(path: String, config: TomlParseResult): Map[String, String] =
+        import org.tomlj.TomlParseResult.getTableOrEmpty(String): TomlTable \ {};
+        import org.tomlj.TomlTable.toMap(): ##java.util.Map \ {};
+        getTableOrEmpty(config, path) |> toMap |> JavaUtils.fromJavaMap
 }

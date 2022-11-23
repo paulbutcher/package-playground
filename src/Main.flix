@@ -2,8 +2,7 @@ def main(): Unit \ IO =
     let mavenSession = Maven.init();
     let config = Config.init();
 
-    let classpath = Config.getDependencies(config) |>
-        Config.getMavenDependencies |>
+    let classpath = Config.getMavenDependencies(config) |>
         Maven.resolveTransitiveDependencies(mavenSession);
 
     let sourceFiles = Source.getSourceFiles(config);
