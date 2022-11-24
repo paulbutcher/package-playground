@@ -33,15 +33,19 @@ namespace Maven {
             JavaUtils.fromJavaList |> 
             List.map(v -> toString(v))
 
-    pub def resolveArtifact(session: Session, coord: String): String \ IO =
+    pub def resolveArtifact(session: Session, coord: String): Result[String, String] \ IO = try {
         import new org.eclipse.aether.resolution.ArtifactRequest(Artifact, JList, String): ArtifactRequest \ IO as newArtifactRequest;
         import org.eclipse.aether.RepositorySystem.resolveArtifact(RepositorySystemSession, ArtifactRequest): ArtifactResult;
 
         newArtifactRequest(mkArtifact(coord), Maven.newRepositoryList(), null as String) |>
             resolveArtifact(session.system, session.session) |>
-            getArtifactPath
+            getArtifactPath |>
+            Ok
+    } catch {
+        case e: ##org.eclipse.aether.RepositoryException => Err(JavaUtils.getExceptionMessage(e))
+    }
 
-    pub def resolveTransitiveDependencies(session: Session, coords: List[String]): List[String] \ IO =
+    pub def resolveTransitiveDependencies(session: Session, coords: List[String]): Result[List[String], String] \ IO = try {
         import static org.eclipse.aether.util.filter.DependencyFilterUtils.classpathFilter(Array[String, false]): DependencyFilter \ IO;
         import new org.eclipse.aether.collection.CollectRequest(JList, JList, JList): CollectRequest \ IO as newCollectRequest;
         import new org.eclipse.aether.graph.Dependency(Artifact, String): Dependency \ IO as newDependency;
@@ -55,7 +59,11 @@ namespace Maven {
         resolveDependencies(session.system, session.session, request) |>
             getArtifactResults |>
             JavaUtils.fromJavaList |>
-            List.map(getArtifactPath)
+            List.map(getArtifactPath) |>
+            Ok
+    } catch {
+        case e: ##org.eclipse.aether.RepositoryException => Err(JavaUtils.getExceptionMessage(e))
+    }
 
     def newRepositorySystem(): RepositorySystem \ IO =
         import static org.apache.maven.repository.internal.MavenRepositorySystemUtils.newServiceLocator(): DefaultServiceLocator;

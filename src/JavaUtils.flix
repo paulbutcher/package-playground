@@ -61,4 +61,8 @@ namespace JavaUtils {
             None
     }
 
+    pub def getExceptionMessage(e: ##java.lang.Throwable): String =
+        import java.lang.Throwable.getMessage(): String \ {};
+        getMessage(e)
+
 }

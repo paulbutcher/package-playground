@@ -4,14 +4,13 @@ def runCompiler(): Result[Unit, String] \ IO =
     let mavenSession = Maven.init();
     let* config = Config.init();
 
-    let classpath = Config.getMavenDependencies(config) |>
+    let* classpath = Config.getMavenDependencies(config) |>
         Maven.resolveTransitiveDependencies(mavenSession);
 
     let sourceFiles = Source.getSourceFiles(config);
 
     let* flixVersion = Config.getFlixVersion(config);
-    let flixJar = Maven.resolveArtifact(mavenSession,
-        "com.paulbutcher:flix:${flixVersion}");
+    let* flixJar = Maven.resolveArtifact(mavenSession, "com.paulbutcher:flix:${flixVersion}");
 
     Ok(Compiler.run(flixJar, sourceFiles, classpath))
 
